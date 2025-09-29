@@ -8,7 +8,4 @@ public class Grid
         //create instances of cells for every part of the grid
         cells = new Cell[size][size];
     }
-    public static void main(String[] args) 
-    {
-    }
 }

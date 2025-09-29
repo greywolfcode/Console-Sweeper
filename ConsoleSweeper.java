@@ -19,7 +19,8 @@ public class ConsoleSweeper
         while (true)
         {
             //clear screen
-            System.out.print("\033[H\033[2J");
+            System.out.print("\033[2J");
+            CursorControl.reset();
             //state machine
             if (gameState == States.Menu)
             {
@@ -48,5 +49,6 @@ public class ConsoleSweeper
                 System.out.println(playGrid.size);
             }
         }
+        input.close();
     }
 }
