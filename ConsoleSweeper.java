@@ -13,6 +13,8 @@ public class ConsoleSweeper
         }
         //State variable
         States gameState = States.Menu;
+        //create instance of font class
+        Font font = new Font();
         //define input scanner
         Scanner input = new Scanner(System.in);
         //Main loop
