@@ -12,16 +12,20 @@ public class Font
         //add font values
         String[] a = {"███", "█ █", "███", "█ █", "█ █"};
         this.font.put("a", a);
-        String[] b = {"", "", "", "", ""};
+        String[] b = {"██ ", "█ █", "██ ", "█ █", "██ "};
         this.font.put("b", b);
-        String[] c = {"", "", "", "", ""};
+        String[] c = {" ██", "█  ", "█  ", "█  ", " ██"};
         this.font.put("c", c);
-        String[] d = {"", "", "", "", ""};
+        String[] d = {"██ ", "█ █", "█ █", "█ █", "██ "};
         this.font.put("d", d);
-        String[] e = {"", "", "", "", ""};
+        String[] e = {"███", "█  ", "██ ", "█", "███"};
         this.font.put("e", e);
-        String[] f = {"", "", "", "", ""};
+        String[] f = {"███", "█  ", "██ ", "█  ", "█  "};
         this.font.put("f", f);
+        String[] g = {" ██", "█  ", "█ █", "█ █", "██ "};
+        this.font.put("g", g);
+        String[] h = {"█ █", "█ █", "███", "█ █", "█ █"};
+        this.font.put("h", h)
     }
     //method to print text to screen
     public void print(String str)
