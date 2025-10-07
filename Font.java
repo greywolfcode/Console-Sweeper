@@ -9,8 +9,8 @@ public class Font
     public Font()
     {
         //create and add font values
-        String[] space = {"   ", "   ", "   ", "   ", "   "}
-        this.font.put(" ", space)
+        String[] space = {"   ", "   ", "   ", "   ", "   "};
+        this.font.put(" ", space);
         String[] a = {"███", "█ █", "███", "█ █", "█ █"};
         this.font.put("a", a);
         String[] b = {"██ ", "█ █", "██ ", "█ █", "██ "};
@@ -45,7 +45,25 @@ public class Font
         this.font.put("p", p);
         String[] q = {"███", "█ █", "█ █", " ███", " ██"};
         this.font.put("q", q);
-    }
+        String[] r = {"███", "█ █", "███", "██ ", "█ █"};
+        this.font.put("r", r);
+        String[] s = {"███", "█  ", "███", "  █", "███"};
+        this.font.put("s", s);
+        String[] t = {"███", " █ ", " █ ", " █ ", " █ "};
+        this.font.put("t", t);
+        String[] u = {"█ █", "█ █", "█ █", "█ █", "███"};
+        this.font.put("u", u);
+        String[] v = {"█ █", "█ █", "█ █", "█ █", " █ "};
+        this.font.put("v", v);
+        String[] w = {"█ █", "█ █", "█ █", "███", "█ █"};
+        this.font.put("w", w);
+        String[] x = {"█ █", "█ █", " █ ", "█ █", "█ █"};
+        this.font.put("x", x);
+        String[] y = {"█ █", "█ █", " █ ", " █ ", " █ "};
+        this.font.put("y", y);
+        String[] z = {"███", "  █", " █ ", "█  ", "███"};
+        this.font.put("z", z);
+        }
     //method to print text to screen
     public void print(String str)
     {
