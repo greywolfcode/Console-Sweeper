@@ -1,3 +1,6 @@
+//import standard libraries
+import java.util.Scanner
+
 //static class
 public class CursorControl 
 {
@@ -13,5 +16,44 @@ public class CursorControl
     static void reset()
     {
         System.out.print("\033[H");
+    }
+    static void moveVert(int y)
+    {
+        if (y < 0)
+        {
+            System.out.print("\033[" + (-1 * y) + "B");
+        }
+        else
+        {
+            System.out.print("\033[" + y + "A");
+        }
+    }
+    static void moveHorz(int x)
+    {
+        if (x < 0)
+        {
+          System.out.print("\033[" + (-1 * x) + "D");
+        }
+        else
+        {
+            System.out.println("\033[" + x + "C");
+        }
+    }
+    static void savePos()
+    {
+        System.out.print("\033[s");
+    }
+    static void restorePos()
+    {
+        System.out.print("\033[u");
+    }
+    static int[] getPos()
+    {
+        System.out.print("\033[6n");
+        //read input
+        Scanner input = new Scanner();
+        String values = input.nextLine();
+        //split text to get just the numbers
+        String[] coords = values.split("[").get[1].split(";")
     }
 }

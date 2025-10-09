@@ -26,12 +26,13 @@ public class ConsoleSweeper
             //state machine
             if (gameState == States.Menu)
             {
-                System.out.println("Welcome to Console Sweeper");
+                font.println("Welcome");
                 System.out.println();
                 System.out.println("Options:");
                 System.out.println("a: Play Console Sweeper");
                 System.out.println("b: Exit Program");
                 System.out.print("What would you like to do?");
+                CursorControl.restorePos();
                 //Get user input
                 String action = input.nextLine();
                 //check what user input is
