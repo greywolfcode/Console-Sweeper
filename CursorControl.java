@@ -1,6 +1,3 @@
-//import standard libraries
-import java.util.Scanner
-
 //static class
 public class CursorControl 
 {
@@ -46,14 +43,5 @@ public class CursorControl
     static void restorePos()
     {
         System.out.print("\033[u");
-    }
-    static int[] getPos()
-    {
-        System.out.print("\033[6n");
-        //read input
-        Scanner input = new Scanner();
-        String values = input.nextLine();
-        //split text to get just the numbers
-        String[] coords = values.split("[").get[1].split(";")
     }
 }

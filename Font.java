@@ -1,12 +1,12 @@
 //import standerd libraries
 import java.util.HashMap;
-import java.util.Arrays;
+import java.lang.StringBuilder;
 
 public class Font 
 {
     //create hashtable of charachters for font
     HashMap <Character, String[]> font = new HashMap<Character, String[]>();
-    //init function- add charachter arrays to font hahsmap
+    //constructor- add charachter arrays to font hahsmap
     public Font()
     {
         //create and add font values
@@ -81,45 +81,48 @@ public class Font
     //method to actually print charachters
     private void printChars(String str)
     {
+        //create the string builder objects
+        StringBuilder one = new StringBuilder();
+        StringBuilder two = new StringBuilder();
+        StringBuilder three = new StringBuilder();
+        StringBuilder four = new StringBuilder();
+        StringBuilder five = new StringBuilder();
         //loop through given charachters
         boolean first = true;
         for (char c : str.toCharArray())
         {
             String[] charachter = this.font.get(c);
             //loop through each string in charachter
-            //move to print next charachter unless it is the 1st iteration
-            if (first)
+            for (int i = 1; i < 6; i++)
             {
-                //print number of lines required to print charachters
-                CursorControl.savePos();
-                int length = str.length() * 4;
-                
-                char[] array = new char[length];
-                Arrays.fill(array, '.');
-                String emptyLines = new String(array);
-                for (int i=0; i < 5; i++)
+                if (i==1)
                 {
-                    System.out.println(emptyLines);
+                    one.append(charachter[0] + " ");
                 }
-                CursorControl.restorePos();
-                first = false;  
-            }
-            else
-            {
-                //move up to print next charachter
-                CursorControl.moveHorz(1);
-                CursorControl.moveVert(6);
-                CursorControl.moveHorz(4);
-                CursorControl.savePos();
-            }
-            for (String string: charachter)
-            {
-                System.out.print(string +" ");
-                //move back and down
-                CursorControl.moveHorz(-4);
-                CursorControl.moveVert(-1);
+                else if (i==2)
+                {
+                    two.append(charachter[1] + " ");
+                }
+                else if (i==3)
+                {
+                    three.append(charachter[2] + " ");
+                }
+                else if (i==4)
+                {
+                    four.append(charachter[3] + " ");
+                }
+                else if (i==5)
+                {
+                    five.append(charachter[4] + " ");
+                }
             }
         }
+        //display the strings
+        System.out.println(one.toString());
+        System.out.println(two.toString());
+        System.out.println(three.toString());
+        System.out.println(four.toString());
+        System.out.println(five.toString());
         
     }
     public void println(String str)

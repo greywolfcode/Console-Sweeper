@@ -23,16 +23,15 @@ public class ConsoleSweeper
             //clear screen
             System.out.print("\033[2J");
             CursorControl.reset();
+            font.println("Console Sweeper");
             //state machine
             if (gameState == States.Menu)
             {
-                font.println("Welcome");
                 System.out.println();
                 System.out.println("Options:");
                 System.out.println("a: Play Console Sweeper");
                 System.out.println("b: Exit Program");
                 System.out.print("What would you like to do?");
-                CursorControl.restorePos();
                 //Get user input
                 String action = input.nextLine();
                 //check what user input is
@@ -49,7 +48,8 @@ public class ConsoleSweeper
             {
                 //create grid object
                 Grid playGrid = new Grid(8);
-                System.out.println(playGrid.size);
+                playGrid.displayGrid();
+                String action = input.nextLine();
             }
         }
         input.close();
