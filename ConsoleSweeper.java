@@ -47,7 +47,7 @@ public class ConsoleSweeper
             else if (gameState == States.Options)
             {
                 //create grid object
-                Grid playGrid = new Grid(8);
+                Grid playGrid = new Grid(10);
                 playGrid.displayGrid();
                 String action = input.nextLine();
             }

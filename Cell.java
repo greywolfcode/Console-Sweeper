@@ -1,8 +1,9 @@
 public class Cell 
 {
     char icon = '■';
-    public Cell()
+    double noiseValue;
+    public Cell(double noiseValue)
     {
-        
+        this.noiseValue = noiseValue;
     }
 }

@@ -15,7 +15,9 @@ public class Grid
         {
             for (int x=0; x<this.cells[y].length; x++)
             {
-                this.cells[y][x] = new Cell();
+                //get noise value
+                double noiseValue = PerlinNoise.noise2D(x / 128.0, y / 128.0);
+                this.cells[y][x] = new Cell(noiseValue);
             }
         }
         //create top line
@@ -36,7 +38,7 @@ public class Grid
             line.append("┃");
             for (Cell cell : this.cells[i])
             {
-                line.append(cell.icon);
+                line.append(Math.round(cell.noiseValue * 100.0) / 100.0);
                 line.append("┃");
             }
             System.out.println(line);
