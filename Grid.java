@@ -1,5 +1,6 @@
 //import standard libraries
 import java.lang.StringBuilder;
+import java.util.Random;
 
 public class Grid 
 {
@@ -9,15 +10,27 @@ public class Grid
     public Grid(int gridSize)
     {
         this.size = gridSize;
+        //create random number generator
+        Random randGen = new Random();
+        double randModifier = randGen.nextDouble() * 10;
         //create instances of cells for every part of the grid
         this.cells = new Cell[this.size][this.size];
         for (int y=0; y<this.cells.length; y++)
         {
             for (int x=0; x<this.cells[y].length; x++)
             {
+                //get new random modifier to add a little bit more noise
+                double randValue = randGen.nextDouble();
                 //get noise value
-                double noiseValue = PerlinNoise.noise2D(x / 128.0, y / 128.0);
-                this.cells[y][x] = new Cell(noiseValue);
+                double noiseValue = PerlinNoise.noise2D((x + randModifier) / 10.0, (y + randModifier) / 10.0) * (randValue + 0.5);
+                //check if random number is below noise value to use percent chance to make it a mine
+                String cellType = "blank";
+                if (randValue < noiseValue)
+                {
+                    cellType = "mine";
+                }
+                //create new cell object
+                this.cells[y][x] = new Cell(x, y, noiseValue, cellType);
             }
         }
         //create top line

@@ -9,8 +9,12 @@ public class PerlinNoise
     }
     public static double noise2D(double x, double y)
     {
+        //get corners
         double s = Math.floor(x);
         double t = Math.floor(y);
+        //normalize corners to be between 0 and 1
+        double xRelative = x - s;
+        double yRelative = y - t;
         //calculate the corner values 
         double[] bottomLeft ={s, t};
         double[] bottomRight = {s + 1, t};
@@ -22,25 +26,28 @@ public class PerlinNoise
         double[] vectorTopLeft = createVector(topLeft);
         double[] vectorTopRight = createVector(topRight);
         //get displacement values
-        double[] deltaBottomLeft = {bottomLeft[0] + x, bottomLeft[1] + y};
-        double[] deltaBottomRight = {bottomRight[0] - x, bottomRight[1] + y};
-        double[] deltaTopLeft = {topLeft[0] + x, topLeft[1] - y};
-        double[] deltaTopRight = {topRight[0] - x, topRight[1] - y};
+        double[] deltaBottomLeft = {xRelative, yRelative};
+        double[] deltaBottomRight = {xRelative - 1, yRelative};
+        double[] deltaTopLeft = {xRelative, yRelative - 1};
+        double[] deltaTopRight = {xRelative - 1, yRelative - 1};
         //get dot products
         double dotBottomLeft = dotProduct(deltaBottomLeft, vectorBottomLeft);
         double dotBottomRight = dotProduct(deltaBottomRight, vectorBottomRight);
         double dotTopLeft = dotProduct(deltaTopLeft, vectorTopLeft);
         double dotTopRight = dotProduct(deltaTopRight, vectorTopRight);
         //get weights for top and bottom
-        double weightX = quanticSmoothstep(x);
-        double weightY = quanticSmoothstep(y);
+        double weightX = quanticSmoothstep(xRelative);
+        double weightY = quanticSmoothstep(yRelative);
         //inerpolate between x distances first
         double top = lerp(dotTopLeft, dotTopRight, weightX);
         double bottom = lerp(dotBottomLeft, dotBottomRight, weightY);
         //interpolate over vertical to get final answer
         double middle = lerp(top, bottom, weightY);
         //return final value
-        return middle;
+        //return middle;
+        //convert from range [0, 1] to [-1, 1]
+        double newValue = ((middle - (-1)) / (1 - (-1))) * (1 - 0) + 0;
+        return newValue;
     }
     private static double[] createVector(double[] array)
     {
