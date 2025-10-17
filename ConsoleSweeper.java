@@ -10,9 +10,12 @@ public class ConsoleSweeper
         {
             Menu,
             Options,
+            Play,
         }
         //State variable
         States gameState = States.Menu;
+        //create grid
+        Grid playGrid = new Grid();
         //create instance of font class
         Font font = new Font();
         //define input scanner
@@ -47,9 +50,48 @@ public class ConsoleSweeper
             else if (gameState == States.Options)
             {
                 //create grid object
-                Grid playGrid = new Grid(10);
+                playGrid.setup(8, 32);
+                gameState = States.Play;
+            }
+            else if (gameState == States.Play)
+            {
+                //dislay stuff and get action
                 playGrid.displayGrid();
+                System.out.println("f=flag o=open u=unflag");
+                System.out.println("x;y (f1;1)");
+                System.out.print("Your action: ");
                 String action = input.nextLine();
+                //parse command
+                if (action.length() < 4)
+                {
+                    continue;
+                }
+                //check for cheat codes
+                if (action.equals("blackSheepWall"))
+                {
+                    playGrid.viewGrid();
+                }
+                else if (action.equals("theFogReturns"))
+                {
+                    playGrid.hideGrid();
+                }
+                else
+                {
+                    //perform action. try catch in case inputted value is not valid
+                    try
+                    {
+                        //split to get proper command
+                        String letter = action.substring(0, 1);
+                        String[] coords = action.substring(1).split(";");
+                        int x = Integer.parseInt(coords[0]) - 1;
+                        int y = Integer.parseInt(coords[1]) - 1;
+                        playGrid.modifyCell(letter, x, y);
+                    }
+                    catch (Exception e)
+                    {
+                        continue;
+                    }
+                }
             }
         }
         input.close();
