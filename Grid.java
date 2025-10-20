@@ -1,6 +1,7 @@
 //import standard libraries
 import java.lang.StringBuilder;
 import java.util.Random;
+import java.util.Stack;
 
 public class Grid 
 {
@@ -158,16 +159,42 @@ public class Grid
         }
         else
         {
-            //check if it is fully empty to do cascade
-            if (this.cells[y][x].nearbyMines == 0)
+            //create stack to hold objects for cascade
+            Stack<Cell> emptyCells = new Stack();
+            //add selected cell to stack
+            emptyCells.push(this.cells[y][x]);
+            //loop until stack is empty
+            int currentX = 0;
+            int currentY = 0;
+            Cell currentCell;
+            while(!emptyCells.empty())
             {
-                
-            }
-            else
-            {
-                this.cells[y][x].updateStatus("open");
+                currentCell = emptyCells.pop();
+                if (currentCell.nearbyMines == 0 && !currentCell.type.equals("open"))
+                {
+                    currentX = currentCell.x;
+                    currentY = currentCell.y;
+                    //put surrounding cells onto the stack. is there a better way to do this?
+                    if (currentX + 1 < this.size)
+                    {
+                        emptyCells.push(this.cells[currentY][currentX+1]);
+                    }
+                    if (currentX - 1 >= 0)
+                    {
+                        emptyCells.push(this.cells[currentY][currentX-1]);
+                    }
+                    if (currentY + 1 < this.size)
+                    {
+                        emptyCells.push(this.cells[currentY+1][currentX]);
+                    }
+                    if (currentY - 1 >= 0)
+                    {
+                        emptyCells.push(this.cells[currentY-1][currentX]);
+                    }
+                }
+                currentCell.updateStatus("open");
+                System.out.println(emptyCells);
             }
         }
-        
     }
 }

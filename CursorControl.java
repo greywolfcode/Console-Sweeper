@@ -29,7 +29,7 @@ public class CursorControl
     {
         if (x < 0)
         {
-          System.out.print("\033[" + (-1 * x) + "D");
+            System.out.print("\033[" + (-1 * x) + "D");
         }
         else
         {

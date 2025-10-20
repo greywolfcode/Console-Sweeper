@@ -14,6 +14,7 @@ public class ConsoleSweeper
         }
         //State variable
         States gameState = States.Menu;
+        boolean clearScreen = true;
         //create grid
         Grid playGrid = new Grid();
         //create instance of font class
@@ -24,8 +25,11 @@ public class ConsoleSweeper
         while (true)
         {
             //clear screen
-            System.out.print("\033[2J");
-            CursorControl.reset();
+            if (clearScreen)
+            {
+                System.out.print("\033[2J");
+                CursorControl.reset();
+            }
             font.println("Console Sweeper");
             //state machine
             if (gameState == States.Menu)
@@ -50,7 +54,7 @@ public class ConsoleSweeper
             else if (gameState == States.Options)
             {
                 //create grid object
-                playGrid.setup(8, 32);
+                playGrid.setup(12, 20);
                 gameState = States.Play;
             }
             else if (gameState == States.Play)
@@ -75,9 +79,18 @@ public class ConsoleSweeper
                 {
                     playGrid.hideGrid();
                 }
+                else if (action.equals("noClear"))
+                {
+                    clearScreen = false;
+                }
+                else if (action.equals("doClear"))
+                {
+                    clearScreen = true;
+                }
                 else
                 {
                     //perform action. try catch in case inputted value is not valid
+                    //replace this later
                     try
                     {
                         //split to get proper command
