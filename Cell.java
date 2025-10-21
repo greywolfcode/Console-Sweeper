@@ -2,11 +2,12 @@ public class Cell
 {
     char icon = '■';
     char defaultIcon = icon;
-    //u2739
     double noiseValue;
     int x;
     int y;
     int nearbyMines = 0;
+    //store index in mine array
+    int mineNum = 0;
     String type = "empty";
     String status = "closed";
     public Cell(int x, int y, double noiseValue, String type)

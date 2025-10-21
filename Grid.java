@@ -1,7 +1,8 @@
 //import standard libraries
 import java.lang.StringBuilder;
 import java.util.Random;
-import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class Grid 
 {
@@ -9,9 +10,10 @@ public class Grid
     Cell[][] cells;
     StringBuilder topLine = new StringBuilder(" ┃");
     Cell[] mines;
-    public Grid()
-    {
-    }
+    boolean firstTurn = true;
+    /*constructor doesn't do anything*/
+    public Grid(){}
+    /*setup method*/
     public void setup(int gridSize, int maxMines)
     {
         this.size = gridSize;
@@ -74,16 +76,34 @@ public class Grid
         //loop thorugh cells to set mine numbers
         for(Cell mine : this.mines)
         {
-            //loop through surrounding cells. improve later?
-            for (int y=mine.y-1; y<=mine.y+1; y++)
+            updateNearbyMines(mine.x, mine.y);
+        }
+    }
+    private void updateNearbyMines(int xMine, int yMine)
+    {
+        //loop through surrounding cells. improve later?
+        for (int y=yMine-1; y<=yMine+1; y++)
+        {
+            for (int x=xMine-1; x<=xMine+1; x++)
             {
-                for (int x=mine.x-1; x<=mine.x+1; x++)
+                //increase nearby mine count if it is in range
+                if ((x >=0 && y >= 0) && (x<this.size && y<this.size))
                 {
-                    //increase nearby mine count if it is not the mine
-                    if ((x >=0 && y >= 0) && (x<this.size && y<this.size))
-                    {
-                        this.cells[y][x].nearbyMines++;
-                    }
+                    this.cells[y][x].nearbyMines++;
+                }
+            }
+        }
+    }
+    private void decrementNearbyMines(int xMine, int yMine)
+    {
+        for (int y=yMine-1; y<=yMine+1; y++)
+        {
+            for (int x=xMine-1; x<=xMine+1; x++)
+            {
+                //decrement mine count if it is in range
+                if ((x>=0 && y>= 0) && (x<this.size && y<this.size))
+                {
+                    this.cells[y][x].nearbyMines--;
                 }
             }
         }
@@ -145,6 +165,8 @@ public class Grid
         else if (command.equals("o"))
         {
             this.openCell(x, y);
+            //update first turn to false
+            this.firstTurn = false;
         }
     }
     private void openCell(int x, int y)
@@ -152,48 +174,92 @@ public class Grid
         //explode all mines
         if (this.cells[y][x].type.equals("mine"))
         {
+            //don't open mines if on 1st turn
+            if (this.firstTurn)
+            {
+                //set current cell to not be a mine
+                this.cells[y][x].type = "empty";
+                //decrement mine counts around moved mine
+                decrementNearbyMines(x, y);
+                //find new spot for the mine
+                moveMine(this.cells[y][x].mineNum);
+                doCascade(x, y);
+                return;
+            }
             for (Cell mine:this.mines)
             {
-                mine.updateStatus("open");
+                    mine.updateStatus("open");
             }
         }
         else
         {
-            //create stack to hold objects for cascade
-            Stack<Cell> emptyCells = new Stack();
-            //add selected cell to stack
-            emptyCells.push(this.cells[y][x]);
-            //loop until stack is empty
-            int currentX = 0;
-            int currentY = 0;
-            Cell currentCell;
-            while(!emptyCells.empty())
+            doCascade(x, y);
+        }
+    }
+    private void moveMine(int mineNum)
+    {
+        Random randGen = new Random();
+        //loop until valid position is found
+        int x;
+        int y;
+        while (true)
+        {
+            x = randGen.nextInt();
+            y = randGen.nextInt();
+            if (this.cells[y][x].type == "empty")
             {
-                currentCell = emptyCells.pop();
-                if (currentCell.nearbyMines == 0 && !currentCell.type.equals("open"))
+                this.cells[y][x].type = "mine";
+                this.cells[y][x].mineNum = mineNum;
+                //replace mine in list with new mine
+                this.mines[mineNum] = this.cells[y][x];
+                //update surrounding numbers
+                updateNearbyMines(x, y);
+            }
+        }
+    }
+    private void doCascade(int x, int y)
+    {
+        //create stack to hold objects for cascade
+        Queue<int[]> cellsToSearch = new LinkedList<>();
+        //add selected cell to stack
+        cellsToSearch.add(new int[] {x, y});
+        int[] coords;
+        //loop until queue is empty
+        while(!cellsToSearch.isEmpty())
+        {
+            coords = cellsToSearch.poll();
+            this.cells[coords[1]][coords[0]].updateStatus("open");
+            if (this.cells[coords[1]][coords[0]].nearbyMines == 0)
+            {
+                //put surrounding cells onto the stack. is there a better way to do this?
+                if (coords[0] + 1 < this.size)
                 {
-                    currentX = currentCell.x;
-                    currentY = currentCell.y;
-                    //put surrounding cells onto the stack. is there a better way to do this?
-                    if (currentX + 1 < this.size)
+                    if (!this.cells[coords[1]][coords[0]+1].status.equals("open"))
                     {
-                        emptyCells.push(this.cells[currentY][currentX+1]);
-                    }
-                    if (currentX - 1 >= 0)
+                        cellsToSearch.add(new int[] {coords[0]+1, coords[1]});
+                    }        
+                }
+                if (coords[0] - 1 >= 0)
+                {
+                    if (!this.cells[coords[1]][coords[0]-1].status.equals("open"))
                     {
-                        emptyCells.push(this.cells[currentY][currentX-1]);
-                    }
-                    if (currentY + 1 < this.size)
-                    {
-                        emptyCells.push(this.cells[currentY+1][currentX]);
-                    }
-                    if (currentY - 1 >= 0)
-                    {
-                        emptyCells.push(this.cells[currentY-1][currentX]);
+                        cellsToSearch.add(new int[] {coords[0]-1, coords[1]});
                     }
                 }
-                currentCell.updateStatus("open");
-                System.out.println(emptyCells);
+                if (coords[1] + 1 < this.size)
+                {
+                    if (!this.cells[coords[1]+1][coords[0]].status.equals("open"))
+                    {
+                        cellsToSearch.add(new int[] {coords[0], coords[1]+1});
+                    }
+                }
+                if (coords[1] - 1 >= 0)
+                {
+                    if (!this.cells[coords[1]-1][coords[0]].status.equals("open"))
+                    {
+                        cellsToSearch.add(new int[] {coords[0], coords[1]-1});
+                    }
+                }
             }
         }
     }
