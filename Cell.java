@@ -1,3 +1,6 @@
+/**
+ * Stores data for each cell of the console sweeper grid
+ */
 public class Cell 
 {
     char icon = '■';
@@ -6,15 +9,16 @@ public class Cell
     int x;
     int y;
     int nearbyMines = 0;
-    //store index in mine array
-    int mineNum = 0;
     String type = "empty";
     String status = "closed";
-    public Cell(int x, int y, double noiseValue, String type)
+    public Cell(int x, int y)
     {
-        this.noiseValue = noiseValue;
         this.x = x;
         this.y = y;
+    }
+    public void generateCell(double noiseValue, String type)
+    {
+        this.noiseValue = noiseValue;
         this.type = type;
     }
     public void updateDefault()
@@ -66,7 +70,7 @@ public class Cell
                 //show number of nearby mines
                 else if (this.nearbyMines > 0)
                 {
-                    //cast to char value. It cannot be over 8, so n issues
+                    //cast to char value. It cannot be over 8, so no issues
                     this.icon = (char)(this.nearbyMines + '0');
                 }
                 //show empty block otherwise

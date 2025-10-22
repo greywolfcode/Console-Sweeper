@@ -3,73 +3,98 @@ import java.lang.StringBuilder;
 import java.util.Random;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Collections;
 
+/**
+ * Stores all methods for munipulating the console sweeper grid
+ */
 public class Grid 
 {
     int size;
     Cell[][] cells;
     StringBuilder topLine = new StringBuilder(" ┃");
     Cell[] mines;
-    boolean firstTurn = true;
-    /*constructor doesn't do anything*/
+    int maxMines;
+    /**constructor doesn't do anything*/
     public Grid(){}
-    /*setup method*/
+    /**setup method*/
     public void setup(int gridSize, int maxMines)
     {
         this.size = gridSize;
-        //create random number generator
-        Random randGen = new Random();
-        double randModifier = randGen.nextDouble() * 10;
+        this.maxMines = maxMines;
         //create instances of cells for every part of the grid
         this.cells = new Cell[this.size][this.size];
         //create list of mines
         this.mines = new Cell[maxMines];
         //loop thorugh all coordinents
-        int currentMines = 0;
-        String cellType;
         for (int y=0; y<this.cells.length; y++)
         {
             for (int x=0; x<this.cells[y].length; x++)
             {
-                //get new random modifier to add a little bit more noise
-                double randValue = randGen.nextDouble();
-                //get noise value
-                double noiseValue = PerlinNoise.noise2D((x + randModifier) / 10.0, (y + randModifier) / 10.0) * (randValue);
-                //check if random number is below noise value to use percent chance to make it a mine
-                cellType = "empty";
-                if (randValue < noiseValue && currentMines < maxMines)
-                {
-                    cellType = "mine";
-                    currentMines ++;
-                }
                 //create new cell object
-                this.cells[y][x] = new Cell(x, y, noiseValue, cellType);
-                //need to create cell object first. Probably a better way to do this
-                if (cellType.equals("mine"))
-                {
-                    this.mines[currentMines - 1] = this.cells[y][x];
-                }
+                this.cells[y][x] = new Cell(x, y);
             }
         }
-        //fill in remaining spaces with random values
-        while (currentMines < maxMines)
-        {
-            int x = randGen.nextInt(this.size);
-            int y = randGen.nextInt(this.size);
-            if (!(this.cells[y][x].type.equals("mine")))
-            {
-                this.cells[y][x].type = "mine";
-                this.mines[currentMines] = this.cells[y][x];
-                currentMines++;
-            }
-        }
-        //validate grid
-        this.validateGrid();
         //create top line
         for (int i=0; i<this.cells[0].length; i++)
         {
             this.topLine.append((i + 1) + "┃");
         }
+    }
+    /**
+     * This should be called once after the first move of a game
+     */
+    public void generateMines(int restrictedX, int restrictedY)
+    {
+        //create random number generator
+        Random randGen = new Random();
+        double randModifier = randGen.nextDouble() * 10;
+        int currentMines = 0;
+        String cellType;
+        //create set of non-mine cells
+        LinkedList<Cell> nonMines = new LinkedList<>();
+        //loop through all cells
+        for (Cell[] row : this.cells)
+        {
+            for (Cell cell : row)
+            {
+                //get random modifier to add a little bit more noise
+                double randValue = randGen.nextDouble();
+                //get noise value
+                double noiseValue = PerlinNoise.noise2D((cell.x + randModifier) / 10.0, (cell.y + randModifier) / 10.0) * (randValue);
+                //check if random number is below noise value to use percent chance to make it a mine
+                cellType = "empty";
+                if (randValue < noiseValue && currentMines < this.maxMines)
+                {
+                    //add cell to array of mine cells; prevent cell from being clicked on cell
+                    if (cell.x != restrictedX && cell.y != restrictedY)
+                    {
+                        cellType = "mine";
+                        this.mines[currentMines] = cell;
+                        currentMines++;
+                    }
+                }
+                if (cellType.equals("empty") && cell.x != restrictedX && cell.y != restrictedY)
+                {
+                    nonMines.add(cell);
+                }
+                cell.generateCell(noiseValue, cellType);
+            }
+        }
+        //shuffle list to get random order
+        Collections.shuffle(nonMines);
+        //fill in remaining spaces with random values
+        while (currentMines < this.maxMines)
+        {
+            //get out clause, just in case
+            if (nonMines.size() == 0)
+                break;
+            Cell newMine = nonMines.removeFirst();
+            newMine.type = "mine";
+            this.mines[currentMines] = newMine;
+            currentMines++;
+        }
+        validateGrid();
     }
     private void validateGrid()
     {
@@ -90,20 +115,6 @@ public class Grid
                 if ((x >=0 && y >= 0) && (x<this.size && y<this.size))
                 {
                     this.cells[y][x].nearbyMines++;
-                }
-            }
-        }
-    }
-    private void decrementNearbyMines(int xMine, int yMine)
-    {
-        for (int y=yMine-1; y<=yMine+1; y++)
-        {
-            for (int x=xMine-1; x<=xMine+1; x++)
-            {
-                //decrement mine count if it is in range
-                if ((x>=0 && y>= 0) && (x<this.size && y<this.size))
-                {
-                    this.cells[y][x].nearbyMines--;
                 }
             }
         }
@@ -152,21 +163,19 @@ public class Grid
             }
         }
     }
-    public void modifyCell(String command, int x, int y)
+    public void modifyCell(PlayerAction action)
     {
-        if (command.equals("f"))
+        if (action.letter.equals("f"))
         {
-            this.cells[y][x].updateStatus("flagged");
+            this.cells[action.y][action.x].updateStatus("flagged");
         }
-        else if (command.equals("u"))
+        else if (action.letter.equals("u"))
         {
-            this.cells[y][x].updateStatus("closed");
+            this.cells[action.y][action.x].updateStatus("closed");
         }
-        else if (command.equals("o"))
+        else if (action.letter.equals("o"))
         {
-            this.openCell(x, y);
-            //update first turn to false
-            this.firstTurn = false;
+            this.openCell(action.x, action.y);
         }
     }
     private void openCell(int x, int y)
@@ -174,18 +183,6 @@ public class Grid
         //explode all mines
         if (this.cells[y][x].type.equals("mine"))
         {
-            //don't open mines if on 1st turn
-            if (this.firstTurn)
-            {
-                //set current cell to not be a mine
-                this.cells[y][x].type = "empty";
-                //decrement mine counts around moved mine
-                decrementNearbyMines(x, y);
-                //find new spot for the mine
-                moveMine(this.cells[y][x].mineNum);
-                doCascade(x, y);
-                return;
-            }
             for (Cell mine:this.mines)
             {
                     mine.updateStatus("open");
@@ -194,27 +191,6 @@ public class Grid
         else
         {
             doCascade(x, y);
-        }
-    }
-    private void moveMine(int mineNum)
-    {
-        Random randGen = new Random();
-        //loop until valid position is found
-        int x;
-        int y;
-        while (true)
-        {
-            x = randGen.nextInt();
-            y = randGen.nextInt();
-            if (this.cells[y][x].type == "empty")
-            {
-                this.cells[y][x].type = "mine";
-                this.cells[y][x].mineNum = mineNum;
-                //replace mine in list with new mine
-                this.mines[mineNum] = this.cells[y][x];
-                //update surrounding numbers
-                updateNearbyMines(x, y);
-            }
         }
     }
     private void doCascade(int x, int y)

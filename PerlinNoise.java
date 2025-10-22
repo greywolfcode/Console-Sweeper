@@ -1,12 +1,21 @@
 //import standard libraries
 import java.util.Arrays;
 
+
+/**
+ * Methods for creating Perlin noise
+ */
 public class PerlinNoise 
 {
     //static class
     private PerlinNoise()
     {
     }
+    /**
+     * Method for finding 2d perlin noise.
+     * Takes doubles x and y coordinents as inputs
+     * Returns noise value as a double
+     */
     public static double noise2D(double x, double y)
     {
         //get corners
@@ -45,7 +54,7 @@ public class PerlinNoise
         double middle = lerp(top, bottom, weightY);
         //return final value
         //return middle;
-        //convert from range [0, 1] to [-1, 1]
+        //convert from range [-1, 1] to [0, 1]
         double newValue = ((middle - (-1)) / (1 - (-1))) * (1 - 0) + 0;
         return newValue;
     }
