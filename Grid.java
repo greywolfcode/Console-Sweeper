@@ -10,20 +10,27 @@ import java.util.Collections;
  */
 public class Grid 
 {
-    int size;
+    int sizeX;
+    int sizeY;
     Cell[][] cells;
     StringBuilder topLine = new StringBuilder(" ┃");
     Cell[] mines;
     int maxMines;
+    int flags = 0;
+    int openedCells = 0;
+    double startTime = 0;
+    Timer timer;
     /**constructor doesn't do anything*/
     public Grid(){}
     /**setup method*/
-    public void setup(int gridSize, int maxMines)
+    public void setup(int gridX, int gridY, int maxMines)
     {
-        this.size = gridSize;
+        this.timer = new Timer();
+        this.sizeX = gridX;
+        this.sizeY = gridY;
         this.maxMines = maxMines;
         //create instances of cells for every part of the grid
-        this.cells = new Cell[this.size][this.size];
+        this.cells = new Cell[this.sizeY][this.sizeX];
         //create list of mines
         this.mines = new Cell[maxMines];
         //loop thorugh all coordinents
@@ -112,7 +119,7 @@ public class Grid
             for (int x=xMine-1; x<=xMine+1; x++)
             {
                 //increase nearby mine count if it is in range
-                if ((x >=0 && y >= 0) && (x<this.size && y<this.size))
+                if ((x >=0 && y >= 0) && (x<this.sizeX && y<this.sizeY))
                 {
                     this.cells[y][x].nearbyMines++;
                 }
@@ -122,6 +129,7 @@ public class Grid
     public void displayGrid()
     {
         //print top line of numbers
+        System.out.println("Mines: " + (this.mines.length - this.flags) + "    Time: " + this.timer.timeHrMinSec());
         System.out.println(this.topLine);
         for (int i=0; i<this.cells.length; i++)
         {
@@ -163,35 +171,55 @@ public class Grid
             }
         }
     }
-    public void modifyCell(PlayerAction action)
+    public char modifyCell(PlayerAction action)
     {
+        //check if given coords are out of range
+        if (action.x >= this.sizeX || action.y >= this.sizeY)
+        {
+            return 'p'; //p for play
+        }
+        //do action
         if (action.letter.equals("f"))
         {
-            this.cells[action.y][action.x].updateStatus("flagged");
+            if (!this.cells[action.y][action.x].status.equals("empty"))
+            {
+                this.flags++;
+                this.cells[action.y][action.x].updateStatus("flagged");
+            }
         }
         else if (action.letter.equals("u"))
         {
-            this.cells[action.y][action.x].updateStatus("closed");
+            if (this.cells[action.y][action.x].status.equals("flagged"))
+            {
+                this.flags--;
+                this.cells[action.y][action.x].updateStatus("closed");
+            }
         }
         else if (action.letter.equals("o"))
         {
-            this.openCell(action.x, action.y);
+            //this determines if the player lost
+            return this.openCell(action.x, action.y);
         }
+        return 'p';
     }
-    private void openCell(int x, int y)
+    private char openCell(int x, int y)
     {
         //explode all mines
         if (this.cells[y][x].type.equals("mine"))
         {
             for (Cell mine:this.mines)
             {
-                    mine.updateStatus("open");
+                mine.updateStatus("open");
             }
+            return 'l'; //l for lose
         }
-        else
+        doCascade(x, y);
+        //check if the player won
+        if ((this.openedCells + this.mines.length) == (this.sizeX * this.sizeY))
         {
-            doCascade(x, y);
+            return 'w'; //w for won
         }
+        return 'p';
     }
     private void doCascade(int x, int y)
     {
@@ -204,11 +232,15 @@ public class Grid
         while(!cellsToSearch.isEmpty())
         {
             coords = cellsToSearch.poll();
-            this.cells[coords[1]][coords[0]].updateStatus("open");
+            if (!this.cells[coords[1]][coords[0]].status.equals("open"))
+            {
+                this.cells[coords[1]][coords[0]].updateStatus("open");
+                this.openedCells++;
+            }
             if (this.cells[coords[1]][coords[0]].nearbyMines == 0)
             {
                 //put surrounding cells onto the stack. is there a better way to do this?
-                if (coords[0] + 1 < this.size)
+                if (coords[0] + 1 < this.sizeX)
                 {
                     if (!this.cells[coords[1]][coords[0]+1].status.equals("open"))
                     {
@@ -222,7 +254,7 @@ public class Grid
                         cellsToSearch.add(new int[] {coords[0]-1, coords[1]});
                     }
                 }
-                if (coords[1] + 1 < this.size)
+                if (coords[1] + 1 < this.sizeY)
                 {
                     if (!this.cells[coords[1]+1][coords[0]].status.equals("open"))
                     {

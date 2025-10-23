@@ -40,7 +40,7 @@ public class Font
         this.font.put('m', m);
         String[] n = {"███", "█ █", "█ █", "█ █", "█ █"};
         this.font.put('n', n);
-        String[] o = {"███", "█ █", "█ █", "█ █", "███"};
+        String[] o = {" █ ", "█ █", "█ █", "█ █", " █ "};
         this.font.put('o', o);
         String[] p = {"███", "█ █", "███", "█  ", "█  "};
         this.font.put('p', p);
@@ -48,7 +48,7 @@ public class Font
         this.font.put('q', q);
         String[] r = {"███", "█ █", "███", "██ ", "█ █"};
         this.font.put('r', r);
-        String[] s = {"███", "█  ", "███", "  █", "███"};
+        String[] s = {" ██", "█  ", "███", "  █", "██ "};
         this.font.put('s', s);
         String[] t = {"███", " █ ", " █ ", " █ ", " █ "};
         this.font.put('t', t);
@@ -64,6 +64,8 @@ public class Font
         this.font.put('y', y);
         String[] z = {"███", "  █", " █ ", "█  ", "███"};
         this.font.put('z', z);
+        String[] exclamationPoint = {" █ ", " █ ", " █ ", "   ", " █ "};
+        this.font.put('!', exclamationPoint);
         }
     //method to print text to screen without newline
     public void print(String str)

@@ -12,6 +12,8 @@ public class ConsoleSweeper
             Options,
             FirstTurn,
             Play,
+            Lost,
+            Won;
         }
         boolean clearScreen = true;
         Grid playGrid = new Grid();
@@ -38,7 +40,7 @@ public class ConsoleSweeper
                 System.out.println("Options:");
                 System.out.println("a: Play Console Sweeper");
                 System.out.println("b: Exit Program");
-                System.out.print("What would you like to do?");
+                System.out.print("What would you like to do? ");
                 //Get user input
                 String action = input.nextLine();
                 //check what user input is
@@ -53,8 +55,53 @@ public class ConsoleSweeper
             }
             else if (gameState == States.Options)
             {
+                int width;
+                int height;
+                int mines;
+                CustomGrid data;
+                String action;
+                //loop until a correct input is given
+                while (true)
+                {
+                    System.out.println("Options");
+                    System.out.println("a: Beginner: 9x9, 10 mines");
+                    System.out.println("b: Intermediate: 16x16, 40 mines");
+                    System.out.println("c: Expert: 30x16, 99 mines");
+                    System.out.println("d: Custom");
+                    System.out.print("What would you like to do? ");
+                    action = input.nextLine();
+                    if (action.equals("a") || action.equals("b") || action.equals("c") || action.equals("d"))
+                    {
+                        break;
+                    }
+                }
+                if (action.equals("a"))
+                {
+                    width = 9;
+                    height = 9;
+                    mines = 10;
+                }
+                else if (action.equals("b"))
+                {
+                    width = 16;
+                    height = 16;
+                    mines = 40;
+                }
+                else if(action.equals("c"))
+                {
+                    width = 30;
+                    height = 16;
+                    mines = 99;
+                }
+                else
+                {
+                    data = getCustomGrid(font, clearScreen);
+                    width = data.width;
+                    height = data.height;
+                    mines = data.mines;
+                }
                 //create grid object
-                playGrid.setup(12, 20);
+                playGrid.setup(width, height, mines);
                 gameState = States.FirstTurn;
             }
             else if(gameState == States.FirstTurn)
@@ -62,7 +109,7 @@ public class ConsoleSweeper
                 //display stuff and get action
                 displayGrid(playGrid);
                 String action = input.nextLine();
-                if (action.length() < 4)
+                if (validateAction(action))
                 {
                     continue;
                 }
@@ -70,7 +117,12 @@ public class ConsoleSweeper
                 //generate mines around selected point
                 playGrid.generateMines(actionValues.x, actionValues.y);
                 //run move on 1st click
-                playGrid.modifyCell(actionValues);
+                char state = playGrid.modifyCell(actionValues);
+                if (state == 'w')
+                {
+                    gameState = States.Won;
+                    continue;
+                }
                 //set state to normal play
                 gameState = States.Play;
                 
@@ -80,11 +132,6 @@ public class ConsoleSweeper
                 //dislay stuff and get action
                 displayGrid(playGrid);
                 String action = input.nextLine();
-                //parse command
-                if (action.length() < 4)
-                {
-                    continue;
-                }
                 //check for cheat codes
                 if (action.equals("blackSheepWall"))
                 {
@@ -102,14 +149,69 @@ public class ConsoleSweeper
                 {
                     clearScreen = true;
                 }
+                else if (action.equals("menu"))
+                {
+                    playGrid = new Grid();
+                    gameState = States.Menu;
+                }
                 else
                 {
+                    if (validateAction(action))
+                    {
+                        continue;
+                    }
                     PlayerAction actionValues = processAction(playGrid, action);
-                    playGrid.modifyCell(actionValues);
+                    //check if the player lost
+                    char state = playGrid.modifyCell(actionValues);
+                    if (state == 'l')
+                    {
+                        gameState = States.Lost;
+                    }
+                    else if (state == 'w')
+                    {
+                        gameState = States.Won;
+                    }
                 }
+            }
+            else if (gameState == States.Lost)
+            {
+                displayGrid(playGrid);
+                System.out.print("\n"); //need newline for text to render correctly
+                font.println("You Lose");
+                System.out.println("Press enter to return to Menu");
+                String action = input.nextLine();
+                //reset grid
+                playGrid = new Grid();
+                gameState = States.Menu;
+            }
+            else if (gameState == States.Won)
+            {
+                displayGrid(playGrid);
+                System.out.println();
+                font.println("You Won!");
+                System.out.println("press enter to return to Menu");
+                String action = input.nextLine();
+                //reset grid
+                playGrid = new Grid();
+                gameState = States.Menu;
             }
         }
         input.close();
+    }
+    private static boolean validateAction(String action)
+    {
+        if (action.length() < 4)
+        {
+            return true;
+        }
+        else if (!action.contains(";"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     private static PlayerAction processAction(Grid grid, String action)
     {
@@ -126,5 +228,40 @@ public class ConsoleSweeper
         System.out.println("f=flag o=open u=unflag");
         System.out.println("x;y (f1;1)");
         System.out.print("Your action: ");
+    }
+    private static CustomGrid getCustomGrid(Font font, boolean clearScreen)
+    {
+        int width = 0;
+        int height = 0;
+        int mines = 0;
+        //create scanner for getting ints
+        Scanner intInput = new Scanner(System.in);
+        //loop until valid input is given
+        while (true)
+        {
+            if (clearScreen)
+            {
+                System.out.println("\033[2J");
+                CursorControl.reset();
+            }
+            font.println("Console Sweeper");
+            System.out.print("Width: ");
+            width = intInput.nextInt();
+            System.out.print("Height: ");
+            height = intInput.nextInt();
+            System.out.print("Mines: ");
+            mines = intInput.nextInt();
+            //validate input
+            if (width == 0 || height == 0)
+            {
+                continue;
+            }
+            if (mines > width * height - 1)
+            {
+                continue;
+            }
+            break;
+        }
+        return new CustomGrid(width, height, mines);
     }
 }
