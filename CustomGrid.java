@@ -1,3 +1,6 @@
+/**
+ * store grid information for transfer
+ */
 public class CustomGrid 
 {
     int width;

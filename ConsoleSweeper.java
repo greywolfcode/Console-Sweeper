@@ -154,6 +154,10 @@ public class ConsoleSweeper
                     playGrid = new Grid();
                     gameState = States.Menu;
                 }
+                else if (action.equals("quit"))
+                {
+                    break;
+                }
                 else
                 {
                     if (validateAction(action))
@@ -198,19 +202,29 @@ public class ConsoleSweeper
         }
         input.close();
     }
+    /**
+     * Checks if an input strig is a valid command
+     * returns true it it is Invalid 
+     * returns false if it is Valid
+     */
     private static boolean validateAction(String action)
     {
         if (action.length() < 4)
         {
             return true;
         }
-        else if (!action.contains(";"))
+        else if (!action.substring(1).contains(";"))
         {
             return true;
         }
         else
         {
-            return false;
+            String[] coords = action.substring(1).split(";");
+            if (coords[0].matches("\\d+") && coords[1].matches("\\d+"))
+            {
+                return false;
+            }
+            return true;
         }
     }
     private static PlayerAction processAction(Grid grid, String action)
@@ -226,7 +240,7 @@ public class ConsoleSweeper
     {
         grid.displayGrid();
         System.out.println("f=flag o=open u=unflag");
-        System.out.println("x;y (f1;1)");
+        System.out.println("Example: o1;2 (column;row)");
         System.out.print("Your action: ");
     }
     private static CustomGrid getCustomGrid(Font font, boolean clearScreen)

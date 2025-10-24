@@ -67,7 +67,9 @@ public class Font
         String[] exclamationPoint = {" █ ", " █ ", " █ ", "   ", " █ "};
         this.font.put('!', exclamationPoint);
         }
-    //method to print text to screen without newline
+    /**
+     * print string to screen without ending new line
+     */
     public void print(String str)
     {   
         //all keys are lowercase
@@ -127,6 +129,9 @@ public class Font
         System.out.println(five.toString());
         
     }
+    /**
+     * print string to string with ending newline
+     */
     public void println(String str)
     {
         this.print(str);

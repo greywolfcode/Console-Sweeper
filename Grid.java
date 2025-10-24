@@ -174,7 +174,7 @@ public class Grid
     public char modifyCell(PlayerAction action)
     {
         //check if given coords are out of range
-        if (action.x >= this.sizeX || action.y >= this.sizeY)
+        if (action.x >= this.sizeX || action.y >= this.sizeY || action.x <= -1 || action.y <= -1) //note move of 0;0 will given as -1;-1
         {
             return 'p'; //p for play
         }

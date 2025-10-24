@@ -1,11 +1,9 @@
 /**
- * Methods for moving the cconsole cursor
+ * Methods for moving the console cursor
  */
 public class CursorControl 
 {
-    private CursorControl()
-    {
-    }
+    private CursorControl(){}
     /**
      * Move cursor to specified coordinents
      * 1;1 is top left and default
