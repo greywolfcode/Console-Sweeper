@@ -181,7 +181,7 @@ public class Grid
         //do action
         if (action.letter.equals("f"))
         {
-            if (!this.cells[action.y][action.x].status.equals("empty"))
+            if (!this.cells[action.y][action.x].status.equals("empty") && !this.cells[action.y][action.x].status.equals("open"))
             {
                 this.flags++;
                 this.cells[action.y][action.x].updateStatus("flagged");
@@ -212,6 +212,11 @@ public class Grid
                 mine.updateStatus("open");
             }
             return 'l'; //l for lose
+        }
+        //update flags if it is flagged
+        if (this.cells[y][x].status == "flagged")
+        {
+            flags--;
         }
         doCascade(x, y);
         //check if the player won
