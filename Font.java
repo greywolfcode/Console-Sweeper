@@ -5,7 +5,7 @@ import java.lang.StringBuilder;
 public class Font 
 {
     //create hashtable of charachters for font
-    HashMap <Character, String[]> font = new HashMap<Character, String[]>();
+    private HashMap <Character, String[]> font = new HashMap<Character, String[]>();
     //constructor- add charachter arrays to font hahsmap
     public Font()
     {

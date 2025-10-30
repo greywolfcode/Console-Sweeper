@@ -96,9 +96,9 @@ public class ConsoleSweeper
                 else
                 {
                     data = getCustomGrid(font, clearScreen);
-                    width = data.width;
-                    height = data.height;
-                    mines = data.mines;
+                    width = data.getWidth();
+                    height = data.getHeight();
+                    mines = data.getMines();
                 }
                 //create grid object
                 playGrid.setup(width, height, mines);
@@ -115,7 +115,7 @@ public class ConsoleSweeper
                 }
                 PlayerAction actionValues = processAction(playGrid, action);
                 //generate mines around selected point
-                playGrid.generateMines(actionValues.x, actionValues.y);
+                playGrid.generateMines(actionValues.getX(), actionValues.getY());
                 //run move on 1st click
                 char state = playGrid.modifyCell(actionValues);
                 if (state == 'w')

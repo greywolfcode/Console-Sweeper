@@ -3,7 +3,8 @@
  */
 public class Timer 
 {
-    double startTime;
+    private double startTime;
+    
     public Timer() 
     {
         this.startTime = System.nanoTime();

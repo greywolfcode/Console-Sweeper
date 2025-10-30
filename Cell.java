@@ -3,14 +3,15 @@
  */
 public class Cell 
 {
-    char icon = '■';
-    char defaultIcon = icon;
-    double noiseValue;
-    int x;
-    int y;
-    int nearbyMines = 0;
-    String type = "empty";
-    String status = "closed";
+    private char icon = '■';
+    private char defaultIcon = icon;
+    private double noiseValue = 0.0;
+    private int x;
+    private int y;
+    private int nearbyMines = 0;
+    private String type = "empty";
+    private String status = "closed";
+    
     public Cell(int x, int y)
     {
         this.x = x;
@@ -80,5 +81,37 @@ public class Cell
                 }
             }
         }
+    }
+    public int getX()
+    {
+        return this.x;
+    }
+    public int getY()
+    {
+        return this.y;
+    }
+    public int getNearbyMines()
+    {
+        return this.nearbyMines;
+    }
+    public String getType()
+    {
+        return this.type;
+    }
+    public String getStatus()
+    {
+        return this.status;
+    }
+    public char getIcon()
+    {
+        return this.icon;
+    }
+    public void incNearbyMines()
+    {
+        this.nearbyMines++;
+    }
+    public void setType(String newType)
+    {
+        this.type = newType;
     }
 }
